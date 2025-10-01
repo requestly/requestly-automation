@@ -232,6 +232,98 @@ function removeResponseHeadersUrl(headers) {
 }
 
 /**
+ * Add or modify query parameters in URLs.
+ * @param {string} paramName - The name of the query parameter to add/modify.
+ * @param {string} paramValue - The value of the query parameter.
+ * @param {Object.<string, string>} [params] - Object containing multiple parameters to add/modify.
+ * @returns {string} The automation URL for modifying query parameters.
+ * @throws {Error} If neither paramName/paramValue nor params are provided.
+ */
+function modifyQueryParamUrl(paramName, paramValue, params) {
+  let query = "";
+  if (params && typeof params === "object") {
+    // Validate all parameters
+    Object.entries(params).forEach(([name, value]) => {
+      if (!name || typeof name !== "string") {
+        throw new Error("Parameter name must be a non-empty string");
+      }
+      if (typeof value !== "string") {
+        throw new Error("Parameter value must be a string");
+      }
+    });
+    query = buildQueryString(params);
+  } else if (paramName !== null && paramName !== undefined && typeof paramValue !== "undefined") {
+    if (!paramName || typeof paramName !== "string") {
+      throw new Error("Parameter name must be a non-empty string");
+    }
+    if (typeof paramValue !== "string") {
+      throw new Error("Parameter value must be a string");
+    }
+    query = `${encodeURIComponent(paramName)}=${encodeURIComponent(paramValue)}`;
+  } else {
+    throw new Error("Provide either params object or paramName and paramValue");
+  }
+  return `https://app.requestly.io/automation/modify-query-param?${query}`;
+}
+
+/**
+ * Shortcut: Add/modify multiple query parameters using an object.
+ * @param {Object.<string, string>} params - Key-value pairs of query parameters to add/modify.
+ * @returns {string} The automation URL for modifying multiple query parameters.
+ * @throws {Error} If params is not provided or not an object.
+ */
+function modifyQueryParamsUrl(params) {
+  if (!params || typeof params !== "object" || Array.isArray(params)) {
+    throw new Error("params parameter is required and must be an object");
+  }
+  return modifyQueryParamUrl(null, null, params);
+}
+
+/**
+ * Remove query parameters from URLs.
+ * @param {string} paramName - The name of the query parameter to remove.
+ * @param {string[]} [params] - Array of parameter names to remove.
+ * @returns {string} The automation URL for removing query parameters.
+ * @throws {Error} If neither paramName nor params are provided.
+ */
+function removeQueryParamUrl(paramName, params) {
+  let query = "";
+  if (params && Array.isArray(params)) {
+    if (params.length === 0) {
+      throw new Error("params array cannot be empty");
+    }
+    // Validate all parameter names
+    params.forEach(name => {
+      if (!name || typeof name !== "string") {
+        throw new Error("Parameter name must be a non-empty string");
+      }
+    });
+    query = params.map(name => `param=${encodeURIComponent(name)}`).join("&");
+  } else if (paramName !== null && paramName !== undefined) {
+    if (typeof paramName !== "string" || !paramName) {
+      throw new Error("Parameter name must be a non-empty string");
+    }
+    query = `param=${encodeURIComponent(paramName)}`;
+  } else {
+    throw new Error("Provide either paramName or params array");
+  }
+  return `https://app.requestly.io/automation/remove-query-param?${query}`;
+}
+
+/**
+ * Shortcut: Remove multiple query parameters using an array.
+ * @param {string[]} params - Array of parameter names to remove.
+ * @returns {string} The automation URL for removing multiple query parameters.
+ * @throws {Error} If params is not provided or not an array.
+ */
+function removeQueryParamsUrl(params) {
+  if (!Array.isArray(params)) {
+    throw new Error("params parameter must be an array");
+  }
+  return removeQueryParamUrl(null, params);
+}
+
+/**
  * Get a URL to import rules using an API key.
  * @param {string} api_key - The API key for importing rules.
  * @throws {Error} If api_key is missing or not a string.
@@ -253,6 +345,10 @@ module.exports = {
   addResponseHeadersUrl,
   removeResponseHeaderUrl,
   removeResponseHeadersUrl,
+  modifyQueryParamUrl,
+  modifyQueryParamsUrl,
+  removeQueryParamUrl,
+  removeQueryParamsUrl,
   importRules,
   getExtension,
   closeWelcomePage,

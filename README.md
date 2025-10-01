@@ -41,6 +41,13 @@ Here are the core functions provided by the package:
 - `removeResponseHeaderUrl(name)`: Removes a single response header.
 - `removeResponseHeadersUrl(headerNames)`: Removes multiple response headers from an array of names.
 
+### Query Parameters
+
+- `modifyQueryParamUrl(paramName, paramValue, params)`: Add or modify query parameters in URLs.
+- `modifyQueryParamsUrl(params)`: Add/modify multiple query parameters using an object.
+- `removeQueryParamUrl(paramName, params)`: Remove query parameters from URLs.
+- `removeQueryParamsUrl(params)`: Remove multiple query parameters using an array.
+
 ### Importing Rules
 
 - `importRules(apiKey)`: Import all rules from your Requestly account using API key.
@@ -83,6 +90,10 @@ const {
   addResponseHeadersUrl,
   removeResponseHeaderUrl,
   removeResponseHeadersUrl,
+  modifyQueryParamUrl,
+  modifyQueryParamsUrl,
+  removeQueryParamUrl,
+  removeQueryParamsUrl,
   importRules,
   closeWelcomePage,
 } = require("@requestly/rq-automation");
@@ -127,6 +138,26 @@ async function seleniumExample() {
   // Remove multiple response headers
   await driver.get(
     removeResponseHeadersUrl(["X-Response-Header", "X-Another-Response-Header"])
+  );
+
+  // Add query parameters for tracking/analytics
+  await driver.get(modifyQueryParamUrl("debug", "true"));
+
+  // Add multiple query parameters for A/B testing
+  await driver.get(
+    modifyQueryParamsUrl({
+      variant: "A",
+      utm_source: "test",
+      user_segment: "premium"
+    })
+  );
+
+  // Remove sensitive query parameters
+  await driver.get(removeQueryParamUrl("api_key"));
+
+  // Remove multiple tracking parameters for privacy testing
+  await driver.get(
+    removeQueryParamsUrl(["utm_source", "utm_medium", "fbclid", "gclid"])
   );
 
   // Import a shared list of rules
@@ -178,6 +209,8 @@ const { getExtension } = require("@requestly/rq-automation");
 const path = require("path");
 const {
   addRequestHeaderUrl,
+  modifyQueryParamsUrl,
+  removeQueryParamsUrl,
   // ... import other functions
   importRules,
   closeWelcomePage,
@@ -199,7 +232,19 @@ async function playwrightExample() {
   const page = await browser.newPage();
 
   // Add a request header
-  await page.goto(addRequestHeaderUrl("X-Request-By", "Puppeteer"));
+  await page.goto(addRequestHeaderUrl("X-Request-By", "Playwright"));
+
+  // Add query parameters for feature testing
+  await page.goto(
+    modifyQueryParamsUrl({
+      feature_flag: "new_ui",
+      test_variant: "B",
+      debug: "true"
+    })
+  );
+
+  // Remove tracking parameters for privacy testing
+  await page.goto(removeQueryParamsUrl(["utm_source", "fbclid"]));
 
   // Import a shared list of rules
   await page.goto(importRules("YOUR_API_KEY"));
@@ -246,6 +291,8 @@ const puppeteer = require("puppeteer");
 const { getExtension } = require("@requestly/rq-automation");
 const {
   addRequestHeaderUrl,
+  modifyQueryParamUrl,
+  removeQueryParamsUrl,
   // ... import other functions
   importRules,
   closeWelcomePage,
@@ -266,6 +313,12 @@ async function puppeteerExample() {
   const page = await browser.newPage();
   await page.goto(addRequestHeaderUrl("X-Request-By", "Puppeteer"));
 
+  // Add query parameter for API testing
+  await page.goto(modifyQueryParamUrl("api_version", "v2"));
+
+  // Remove multiple sensitive parameters
+  await page.goto(removeQueryParamsUrl(["session_token", "api_key"]));
+
   // Import a shared list of rules
   await page.goto(importRules("YOUR_API_KEY"));
 
@@ -285,4 +338,4 @@ puppeteerExample();
 
 ## Keywords
 
-`requestly` `selenium` `playwright` `puppeteer` `webdriver` `chrome` `modify` `headers` `request headers` `response headers` `redirect` `delay` `throttle` `automation` `testing`
+`requestly` `selenium` `playwright` `puppeteer` `webdriver` `chrome` `modify` `headers` `request headers` `response headers` `query parameters` `url parameters` `redirect` `delay` `throttle` `automation` `testing` `a/b testing` `feature flags`

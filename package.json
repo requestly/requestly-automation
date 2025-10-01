@@ -30,12 +30,17 @@
     "headers",
     "request headers",
     "response headers",
+    "query parameters",
+    "url parameters",
     "redirect",
     "redirect network requests",
     "delay",
     "delay network requests",
     "throttle",
-    "throttle network requests"
+    "throttle network requests",
+    "automation testing",
+    "web testing",
+    "api testing"
   ],
   "peerDependencies": {
     "selenium-webdriver": "^4.0.0",
